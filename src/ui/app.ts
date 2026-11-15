@@ -1,9 +1,12 @@
 import { state, subscribe, setScreen, openCase, activeCase, progress, visitLocation, discoverClue, markDocumentRead, addFlag, hasClue, hasFlag, markInterviewed, emit, markDirty } from '../engine/state';
 import { persistSave, resetSlot, ensureProgress } from '../engine/save';
 import { cases, getCase } from '../data/cases';
+import { sfx } from '../engine/audio';
 import type { CaseData, Clue, Character, BoardNode, BoardEdge, ScoreResult } from '../types';
 
 let root: HTMLElement;
+let modal: { title: string; body: string } | null = null;
+function showModal(title: string, body: string) { modal = { title, body }; emit(); }
 
 export function renderApp(el: HTMLElement) {
   root = el;
@@ -22,6 +25,7 @@ function render() {
   else if (s.screen === 'intro') html = introScreen();
   else if (s.screen === 'case') html = caseScreen();
   if (s.notice) html += `<div class="notice">${esc(s.notice)}</div>`;
+  if (modal) html += `<div class="modal-back" data-act="close-modal"><div class="modal" onclick="event.stopPropagation()"><h2 style="margin-top:0">${esc(modal.title)}</h2><div>${modal.body}</div><div style="margin-top:14px"><button class="primary" data-act="close-modal">Fermer</button></div></div></div>`;
   root.innerHTML = html;
   bindEvents();
 }
@@ -89,6 +93,9 @@ function settingsScreen() {
     <div class="card"><h3>Texte</h3><p class="muted">Taille du texte pour le confort de lecture.</p>
       <div class="row"><button data-act="textsize" data-v="normal" class="${s.textSize==='normal'?'primary':''}">Normal</button>
       <button data-act="textsize" data-v="large" class="${s.textSize==='large'?'primary':''}">Grand</button></div></div>
+    <div class="card" style="margin-top:12px"><h3>Effets sonores</h3><p class="muted">Ambiance sonore discrète lors des interactions (clics, découvertes, résolution).</p>
+      <div class="row"><button data-act="sound" data-v="on" class="${s.sound?'primary':''}">Activés</button>
+      <button data-act="sound" data-v="off" class="${!s.sound?'primary':''}">Désactivés</button></div></div>
     <div class="card" style="margin-top:12px"><h3>Sauvegardes</h3><p class="muted">La progression est enregistrée automatiquement dans ce navigateur (plusieurs affaires conservées).</p>
       <button data-act="reset-save" style="border-color:#5a3030;color:#f2b3b3">Réinitialiser toutes les sauvegardes</button></div>
     <div class="card" style="margin-top:12px"><h3>Installation</h3><p class="muted">Sur iPad : Safari → Partager → "Sur l’écran d’accueil" pour installer la PWA. Mode paysage recommandé.</p></div>
@@ -161,7 +168,8 @@ function renderScene(c: CaseData, loc: any) {
 
 function sceneSvg(key: string, name: string) {
   const palettes: Record<string,[string,string,string]> = {
-    hall:['#101522','#1a2235','#26314a'], bureau:['#14110f','#231d18','#3a2e24'], info:['#0b1218','#102030','#18324a'], labo:['#0e1418','#16242a','#22404a'], archives:['#14120f','#201c17','#332c22']
+    hall:['#101522','#1a2235','#26314a'], bureau:['#14110f','#231d18','#3a2e24'], info:['#0b1218','#102030','#18324a'], labo:['#0e1418','#16242a','#22404a'], archives:['#14120f','#201c17','#332c22'],
+    reception:['#161310','#241e18','#3a3126'], room:['#12141b','#1d2230','#2a3448'], corridor:['#121417','#1b2028','#2a3240'], laundry:['#101619','#18262b','#24404a'], parking:['#0e1014','#171b22','#242b36']
   };
   const p = palettes[key] || ['#101522','#1a2235','#26314a'];
   return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block">
@@ -180,6 +188,11 @@ function sceneDetails(key: string) {
   if (key==='info') return `<rect x="160" y="200" width="180" height="420" rx="8" fill="#16202d"/><rect x="380" y="200" width="180" height="420" rx="8" fill="#16202d"/><rect x="700" y="320" width="520" height="260" rx="8" fill="#0f1824" stroke="#2b3d55"/><rect x="740" y="360" width="180" height="120" fill="#0a2a3a"/><rect x="940" y="360" width="240" height="120" fill="#0a2230"/>`;
   if (key==='labo') return `<rect x="140" y="420" width="1320" height="50" rx="6" fill="#22313a"/><rect x="260" y="470" width="30" height="220" fill="#1b2730"/><rect x="720" y="470" width="30" height="220" fill="#1b2730"/><rect x="1180" y="470" width="30" height="220" fill="#1b2730"/><rect x="960" y="220" width="260" height="180" fill="#182833" stroke="#355"/> <rect x="300" y="260" width="200" height="140" fill="#1a2a33"/>`;
   if (key==='archives') return `<rect x="200" y="160" width="180" height="560" fill="#2a241b"/><rect x="420" y="160" width="180" height="560" fill="#2d261d"/><rect x="640" y="160" width="180" height="560" fill="#2a241b"/><rect x="980" y="160" width="420" height="560" fill="#262018"/><rect x="500" y="520" width="260" height="160" fill="#3a3328"/>`;
+  if (key==='reception') return `<rect x="160" y="460" width="560" height="220" rx="12" fill="#2a241b" stroke="#4a3d2a"/><rect x="760" y="220" width="260" height="360" fill="#1b2230" stroke="#334"/><rect x="1080" y="520" width="280" height="160" fill="#232018"/><circle cx="360" cy="260" r="60" fill="#d4b06a" opacity=".12"/>`;
+  if (key==='room') return `<rect x="180" y="500" width="520" height="180" rx="10" fill="#2a3348"/><rect x="220" y="420" width="440" height="90" fill="#33435a"/><rect x="980" y="180" width="320" height="420" fill="#1b2433" stroke="#334"/><rect x="760" y="520" width="160" height="160" fill="#232a3a"/>`;
+  if (key==='corridor') return `<rect x="120" y="180" width="1360" height="520" fill="#1a202a" stroke="#2f3948"/><rect x="260" y="220" width="180" height="440" fill="#202838"/><rect x="980" y="220" width="220" height="440" fill="#202838"/><rect x="520" y="560" width="360" height="120" fill="#2a3340"/>`;
+  if (key==='laundry') return `<rect x="140" y="360" width="260" height="300" rx="10" fill="#22323a"/><rect x="440" y="360" width="260" height="300" rx="10" fill="#22323a"/><rect x="760" y="420" width="520" height="60" fill="#2b3f48"/><rect x="820" y="220" width="360" height="160" fill="#1b2a30"/>`;
+  if (key==='parking') return `<rect x="100" y="560" width="1400" height="180" fill="#1b2028"/><rect x="180" y="240" width="360" height="260" fill="#222832" stroke="#39414d"/><rect x="980" y="300" width="420" height="220" fill="#1f2530"/><rect x="620" y="520" width="200" height="60" fill="#2a313d"/>`;
   return '';
 }
 
@@ -303,6 +316,7 @@ function bindEvents() {
     else if (act === 'tab') { state.caseTab = t.dataset.tab as any; emit(); }
     else if (act === 'loc') { visitLocation(t.dataset.id!); }
     else if (act === 'hotspot') handleHotspot(t.dataset.loc!, t.dataset.hid!);
+    else if (act === 'close-modal') { modal = null; emit(); }
     else if (act === 'sel-clue') { state.selectedClueId = t.dataset.id; emit(); }
     else if (act === 'char') { state.activeCharacterId = t.dataset.id; emit(); setTimeout(()=>{ const d=document.getElementById('dlog'); if(d) d.scrollTop=d.scrollHeight; },0); }
     else if (act === 'ask') handleAsk(t.dataset.char!, t.dataset.opt!);
@@ -313,6 +327,7 @@ function bindEvents() {
     else if (act === 'zoom') { const p=progress()!; p.board.zoom = Math.min(2, Math.max(0.4, p.board.zoom + (t.dataset.dir==='in'?0.1:-0.1))); markDirty(); emit(); }
     else if (act === 'tl-move') moveTimeline(t.dataset.id!, t.dataset.dir as any);
     else if (act === 'textsize') { state.save.settings.textSize = t.dataset.v as any; document.documentElement.style.fontSize = state.save.settings.textSize==='large'?'18px':'16px'; markDirty(); emit(); }
+    else if (act === 'sound') { state.save.settings.sound = t.dataset.v === 'on'; markDirty(); emit(); }
     else if (act === 'reset-save') { if(confirm('Réinitialiser toutes les sauvegardes ?')) { state.save = resetSlot(); dialogueStateClear(); setScreen('menu'); } }
   };
 
@@ -340,23 +355,30 @@ function dialogueStateClear(){ for(const k of Object.keys(dialogueState)) delete
 function handleHotspot(locId: string, hid: string) {
   const c = activeCase()!; const p = progress()!;
   const loc = c.locations.find(l=>l.id===locId)!; const h = loc.hotspots.find(x=>x.id===hid)!;
-  let msg = `${h.label}: ${h.description}`;
-  let foundNew = false;
+  let body = `<p>${esc(h.description)}</p>`;
   if (h.clueId && !p.discoveredClues.includes(h.clueId)) {
-    if (discoverClue(h.clueId)) { foundNew = true; msg += `\n\nIndice découvert : ${c.clues.find(x=>x.id===h.clueId)?.name}`; }
+    if (discoverClue(h.clueId)) {
+      const cl = c.clues.find(x=>x.id===h.clueId);
+      if (cl) body += `<div class="card" style="margin-top:10px;border-color:var(--accent)"><div class="badge ok">Nouvel indice</div><h3 style="margin:6px 0">${cl.illustration} ${esc(cl.name)}</h3><p class="muted">${esc(cl.description)}</p>${cl.documentText?`<div class="doc" style="margin-top:8px">${esc(cl.documentText)}</div>`:''}</div>`;
+      state.notice = cl ? `Nouvel indice: ${cl.name}` : 'Nouvel indice découvert';
+      sfx('discover', state.save.settings.sound);
+      setTimeout(()=>{state.notice=undefined; emit();},2200);
+    } else { sfx('click', state.save.settings.sound); }
+  } else {
+    if (h.clueId) { const cl = c.clues.find(x=>x.id===h.clueId); if (cl) body += `<p class="muted" style="margin-top:8px">Indice déjà relevé : <strong>${esc(cl.name)}</strong></p>`; }
+    sfx('click', state.save.settings.sound);
   }
   if (h.clueId) markDocumentRead(h.clueId);
   if (h.unlocksLocationId) {
     const ul = c.locations.find(l=>l.id===h.unlocksLocationId);
     if (ul && isLocationUnlocked(c, ul.id, progress()!.discoveredClues)) {
-      if (!p.visitedLocations.includes(ul.id)) msg += `\n\nNouvelle zone accessible : ${ul.name}`;
+      body += `<p style="margin-top:10px;color:var(--accent)">Nouvelle zone accessible : <strong>${esc(ul.name)}</strong></p>`;
     }
   }
-  // auto visit location
+  if (h.zoomText) body += `<p class="muted" style="margin-top:8px">${esc(h.zoomText)}</p>`;
   if (!p.visitedLocations.includes(locId)) p.visitedLocations.push(locId);
   p.updatedAt = Date.now(); markDirty();
-  alert(msg);
-  emit();
+  showModal(h.label, body);
 }
 
 function handleAsk(charId: string, optId: string) {
@@ -382,10 +404,10 @@ function addBoardNode(kind: string) {
   let refId = '';
   if (kind === 'clue') {
     const avail = c.clues.filter(cl=>p.discoveredClues.includes(cl.id));
-    const name = prompt('Nom ou id de la preuve é ajouter (indices découverts):\n' + avail.map(a=>`- ${a.name}`).join('\n'));
+    const name = prompt('Nom de la preuve à ajouter (indices découverts):\n' + avail.map(a=>`- ${a.name}`).join('\n'));
     if (!name) return;
     const found = avail.find(a=>a.name.toLowerCase().includes(name.toLowerCase()) || a.id===name);
-    if (!found) { alert('Indice non trouvé parmi ceux découverts.'); return; }
+    if (!found) { state.notice = 'Indice non trouvé parmi ceux découverts.'; emit(); setTimeout(()=>{state.notice=undefined; emit();},2000); return; }
     label = found.name; refId = found.id;
   } else if (kind === 'character') {
     const name = prompt('Personnage:\n' + c.characters.map(x=>`- ${x.name}`).join('\n'));
@@ -432,7 +454,7 @@ function bindBoard(wrap: HTMLElement, canvas: HTMLElement) {
       const dy = (ev.clientY - boardDrag.startY) / (progress()!.board.zoom);
       if (Math.abs(dx)+Math.abs(dy)>3) boardDrag.moved = true;
       const p = progress()!; const n = p.board.nodes.find(x=>x.id===boardDrag!.id);
-      if (n) { n.x = Math.max(0, boardDrag.ox + dx); n.y = Math.max(0, boardDrag.oy + dy); nodeEl.style.left = n.x+'px'; nodeEl.style.top = n.y+'px'; }
+      if (n) { n.x = Math.max(0, boardDrag.ox + dx); n.y = Math.max(0, boardDrag.oy + dy); nodeEl.style.left = n.x+'px'; nodeEl.style.top = n.y+'px'; refreshBoardEdges(p); }
     };
     nodeEl.onpointerup = (ev) => {
       if (boardDrag && boardDrag.id === nodeEl.dataset.node) { markDirty(); boardDrag = null; }
@@ -454,6 +476,12 @@ function bindBoard(wrap: HTMLElement, canvas: HTMLElement) {
   wrap.onpointerup = () => { if (boardPan) { markDirty(); boardPan = null; } };
 }
 
+function refreshBoardEdges(p: any) {
+  const svg = document.querySelector('.board-svg');
+  if (!svg) return;
+  svg.innerHTML = p.board.edges.map((e: any)=>{ const a=p.board.nodes.find((n:any)=>n.id===e.from), d=p.board.nodes.find((n:any)=>n.id===e.to); if(!a||!d) return ''; const x1=a.x+90,y1=a.y+30,x2=d.x+90,y2=d.y+30; return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#d4b06a" stroke-width="2" opacity="0.7"/>`; }).join('');
+}
+
 function moveTimeline(id: string, dir: 'up'|'down') {
   const p = progress()!; const arr = p.timelineOrder; const i = arr.indexOf(id); if (i<0) return;
   const j = dir==='up'? i-1 : i+1; if (j<0 || j>=arr.length) return;
@@ -465,18 +493,19 @@ function submitResolution(form: HTMLFormElement) {
   const answers: Record<string,string> = {};
   for (const q of c.solution.questions) {
     const v = (form.querySelector(`input[name="${q.id}"]:checked`) as HTMLInputElement|null)?.value;
-    if (!v) { alert('Répondez é toutes les questions.'); return; }
+    if (!v) { state.notice = 'Répondez à toutes les questions.'; emit(); setTimeout(()=>{state.notice=undefined; emit();},2000); return; }
     answers[q.id]=v;
   }
   p.attempts = (p.attempts||0) + 1;
   let correct = 0; const details: string[] = [];
-  c.solution.questions.forEach(q=>{ if(answers[q.id]===q.correctOptionId) { correct++; details.push(`? ${q.prompt}`);} else { details.push(`? ${q.prompt}`);} });
+  c.solution.questions.forEach(q=>{ if(answers[q.id]===q.correctOptionId) { correct++; details.push(`✔ ${q.prompt}`);} else { details.push(`✘ ${q.prompt}`);} });
   const allCorrect = correct === c.solution.questions.length;
   if (!allCorrect) {
+    sfx('error', state.save.settings.sound);
     const res = document.getElementById('resolveResult')!;
     res.innerHTML = `<div class="card" style="border-color:#5a3030"><h3>Déduction incomplète (${correct}/${c.solution.questions.length})</h3>
       <ul>${details.map(d=>`<li>${esc(d)}</li>`).join('')}</ul>
-      <p>Certains éléments ne concordent pas. Reprenez léenquéte : explorez les lieux restants, relisez les indices et vérifiez la chronologie. La solution n'est pas révélée.</p>
+      <p>Certains éléments ne concordent pas. Reprenez l’enquête : explorez les lieux restants, relisez les indices et vérifiez la chronologie. La solution n’est pas révélée.</p>
       <button data-act="tab" data-tab="lieux" class="primary">Retourner sur le terrain</button></div>`;
     markDirty(); persistSave(state.save); emit(); return;
   }
@@ -485,6 +514,7 @@ function submitResolution(form: HTMLFormElement) {
   p.resolved = true; p.score = score; p.updatedAt = Date.now();
   state.save.completed[c.id] = { score, completedAt: Date.now() };
   state.save.stats.casesCompleted = Object.keys(state.save.completed).length;
+  sfx('success', state.save.settings.sound);
   markDirty(); persistSave(state.save);
   emit();
 }
@@ -506,7 +536,7 @@ function computeScore(c: CaseData, p: any): ScoreResult {
     `Preuves clés identifiées: ${keyFound}/${c.solution.keyClueIds.length} (+${deductions})`,
     `Contradictions/pistes vérifiées: ${contraFlags}/4 (+${contradictions})`,
     `Tentatives de résolution: ${p.attempts} (pénalité ${Math.max(0,(p.attempts-1))*3})`,
-    `Bonus enquéte: +${timeBonus}`
+    `Bonus enquête: +${timeBonus}`
   ];
   return { total, clues, deductions, contradictions, hints: hintsPenalty, time: timeBonus, breakdown };
 }
