@@ -47,10 +47,11 @@ button.ghost { background: transparent; }
 .scene-wrap { flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; padding:12px; }
 .scene { position:relative; width: min(100%, 1100px); aspect-ratio: 16/9; border-radius: 16px; border:1px solid var(--border); overflow:hidden; box-shadow: var(--shadow); background:#0a0d14; }
 .scene-bg { position:absolute; inset:0; }
-.hotspot { position:absolute; border:2px solid rgba(212,176,106,.0); border-radius:10px; background: rgba(212,176,106,.0); cursor:pointer; }
-.hotspot:hover, .hotspot:focus { border-color: rgba(212,176,106,.7); background: rgba(212,176,106,.12); }
-.hotspot .dot { position:absolute; right:6px; top:6px; width:10px; height:10px; border-radius:50%; background: var(--accent); box-shadow:0 0 10px rgba(212,176,106,.8); }
-.hotspot.found .dot { background: var(--ok); box-shadow:0 0 10px rgba(92,184,138,.8); }
+.hotspot { position:absolute; border:2px solid rgba(212,176,106,.15); border-radius:10px; background: rgba(212,176,106,.03); cursor:pointer; transition: all .15s ease; }
+.hotspot:hover, .hotspot:focus { border-color: rgba(212,176,106,.85); background: rgba(212,176,106,.14); box-shadow: 0 0 18px rgba(212,176,106,.18) inset; }
+.hotspot .dot { position:absolute; right:6px; top:6px; width:12px; height:12px; border-radius:50%; background: var(--accent); box-shadow:0 0 12px rgba(212,176,106,.9); animation: pulse 2.2s ease-in-out infinite; }
+.hotspot.found .dot { background: var(--ok); box-shadow:0 0 12px rgba(92,184,138,.9); animation: none; opacity:.85; }
+@keyframes pulse { 0%,100%{ transform: scale(1); opacity: .9; } 50%{ transform: scale(1.25); opacity: 1; } }
 .scene-info { position:absolute; left:12px; bottom:12px; right:12px; background: rgba(11,13,18,.78); border:1px solid var(--border); border-radius:12px; padding:10px 12px; backdrop-filter: blur(6px); }
 /* Inventory */
 .inv-layout { display:flex; flex:1; overflow:hidden; }

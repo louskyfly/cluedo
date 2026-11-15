@@ -167,8 +167,12 @@ function renderScene(c: CaseData, loc: any) {
 }
 
 function sceneSvg(key: string, name: string) {
+  if (key === 'hall') return hallScene();
+  if (key === 'bureau') return bureauScene();
+  if (key === 'info') return infoScene();
+  if (key === 'labo') return laboScene();
+  if (key === 'archives') return archivesScene();
   const palettes: Record<string,[string,string,string]> = {
-    hall:['#101522','#1a2235','#26314a'], bureau:['#14110f','#231d18','#3a2e24'], info:['#0b1218','#102030','#18324a'], labo:['#0e1418','#16242a','#22404a'], archives:['#14120f','#201c17','#332c22'],
     reception:['#161310','#241e18','#3a3126'], room:['#12141b','#1d2230','#2a3448'], corridor:['#121417','#1b2028','#2a3240'], laundry:['#101619','#18262b','#24404a'], parking:['#0e1014','#171b22','#242b36']
   };
   const p = palettes[key] || ['#101522','#1a2235','#26314a'];
@@ -183,17 +187,250 @@ function sceneSvg(key: string, name: string) {
   </svg>`;
 }
 function sceneDetails(key: string) {
-  if (key==='hall') return `<rect x="120" y="520" width="420" height="220" rx="10" fill="#1b2433" stroke="#334"/><rect x="700" y="180" width="220" height="360" rx="8" fill="#141b28" stroke="#334"/><rect x="980" y="520" width="140" height="220" fill="#20283a"/><circle cx="1180" cy="220" r="18" fill="#7aa2c8" opacity=".6"/>`;
-  if (key==='bureau') return `<rect x="520" y="420" width="520" height="40" rx="6" fill="#2a221b"/><rect x="560" y="460" width="40" height="220" fill="#241d17"/><rect x="960" y="460" width="40" height="220" fill="#241d17"/><rect x="240" y="180" width="220" height="160" fill="#1a2433" stroke="#334"/><rect x="1180" y="260" width="180" height="360" fill="#20283a"/>`;
-  if (key==='info') return `<rect x="160" y="200" width="180" height="420" rx="8" fill="#16202d"/><rect x="380" y="200" width="180" height="420" rx="8" fill="#16202d"/><rect x="700" y="320" width="520" height="260" rx="8" fill="#0f1824" stroke="#2b3d55"/><rect x="740" y="360" width="180" height="120" fill="#0a2a3a"/><rect x="940" y="360" width="240" height="120" fill="#0a2230"/>`;
-  if (key==='labo') return `<rect x="140" y="420" width="1320" height="50" rx="6" fill="#22313a"/><rect x="260" y="470" width="30" height="220" fill="#1b2730"/><rect x="720" y="470" width="30" height="220" fill="#1b2730"/><rect x="1180" y="470" width="30" height="220" fill="#1b2730"/><rect x="960" y="220" width="260" height="180" fill="#182833" stroke="#355"/> <rect x="300" y="260" width="200" height="140" fill="#1a2a33"/>`;
-  if (key==='archives') return `<rect x="200" y="160" width="180" height="560" fill="#2a241b"/><rect x="420" y="160" width="180" height="560" fill="#2d261d"/><rect x="640" y="160" width="180" height="560" fill="#2a241b"/><rect x="980" y="160" width="420" height="560" fill="#262018"/><rect x="500" y="520" width="260" height="160" fill="#3a3328"/>`;
   if (key==='reception') return `<rect x="160" y="460" width="560" height="220" rx="12" fill="#2a241b" stroke="#4a3d2a"/><rect x="760" y="220" width="260" height="360" fill="#1b2230" stroke="#334"/><rect x="1080" y="520" width="280" height="160" fill="#232018"/><circle cx="360" cy="260" r="60" fill="#d4b06a" opacity=".12"/>`;
   if (key==='room') return `<rect x="180" y="500" width="520" height="180" rx="10" fill="#2a3348"/><rect x="220" y="420" width="440" height="90" fill="#33435a"/><rect x="980" y="180" width="320" height="420" fill="#1b2433" stroke="#334"/><rect x="760" y="520" width="160" height="160" fill="#232a3a"/>`;
   if (key==='corridor') return `<rect x="120" y="180" width="1360" height="520" fill="#1a202a" stroke="#2f3948"/><rect x="260" y="220" width="180" height="440" fill="#202838"/><rect x="980" y="220" width="220" height="440" fill="#202838"/><rect x="520" y="560" width="360" height="120" fill="#2a3340"/>`;
   if (key==='laundry') return `<rect x="140" y="360" width="260" height="300" rx="10" fill="#22323a"/><rect x="440" y="360" width="260" height="300" rx="10" fill="#22323a"/><rect x="760" y="420" width="520" height="60" fill="#2b3f48"/><rect x="820" y="220" width="360" height="160" fill="#1b2a30"/>`;
   if (key==='parking') return `<rect x="100" y="560" width="1400" height="180" fill="#1b2028"/><rect x="180" y="240" width="360" height="260" fill="#222832" stroke="#39414d"/><rect x="980" y="300" width="420" height="220" fill="#1f2530"/><rect x="620" y="520" width="200" height="60" fill="#2a313d"/>`;
   return '';
+}
+
+function hallScene() {
+  return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hallWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a2230"/><stop offset="1" stop-color="#10141d"/></linearGradient>
+    <linearGradient id="hallFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2f3a"/><stop offset="1" stop-color="#171a22"/></linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7aa2c8" stop-opacity=".25"/><stop offset="1" stop-color="#d4e6f7" stop-opacity=".05"/></linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b778a"/><stop offset="1" stop-color="#3a424f"/></linearGradient>
+    <filter id="vign"><feRadialGradient id="rg" cx="50%" cy="45%" r="70%"><stop offset="60%" stop-color="white"/><stop offset="100%" stop-color="black"/></feRadialGradient><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/></filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#hallWall)"/>
+  <rect x="0" y="560" width="1600" height="340" fill="url(#hallFloor)"/>
+  <g opacity=".25" stroke="#4a5568" stroke-width="2"><line x1="0" y1="560" x2="400" y2="900"/><line x1="200" y1="560" x2="520" y2="900"/><line x1="400" y1="560" x2="660" y2="900"/><line x1="600" y1="560" x2="800" y2="900"/><line x1="800" y1="560" x2="940" y2="900"/><line x1="1000" y1="560" x2="1080" y2="900"/><line x1="1200" y1="560" x2="1220" y2="900"/><line x1="1400" y1="560" x2="1360" y2="900"/></g>
+  <!-- back wall panels -->
+  <rect x="80" y="120" width="1440" height="460" rx="8" fill="#141a26" stroke="#283244"/>
+  <!-- glass entrance left -->
+  <rect x="120" y="160" width="360" height="400" rx="6" fill="url(#glass)" stroke="#5f7f99"/>
+  <line x1="300" y1="160" x2="300" y2="560" stroke="#5f7f99"/><line x1="120" y1="360" x2="480" y2="360" stroke="#5f7f99"/>
+  <!-- corridor door center -->
+  <rect x="700" y="200" width="260" height="360" rx="8" fill="#1c2433" stroke="#3a4a63"/>
+  <rect x="720" y="220" width="220" height="320" rx="4" fill="#101723"/>
+  <rect x="760" y="260" width="140" height="180" rx="4" fill="#0b1220" stroke="#2a3a52"/>
+  <text x="830" y="360" text-anchor="middle" fill="#7aa2c8" font-size="18" font-family="Segoe UI">ACCÈS</text>
+  <text x="830" y="385" text-anchor="middle" fill="#7aa2c8" font-size="18" font-family="Segoe UI">LABOS</text>
+  <circle cx="930" cy="410" r="6" fill="#d4b06a"/>
+  <!-- security desk -->
+  <rect x="980" y="430" width="520" height="160" rx="10" fill="#232b3a" stroke="#3b495f"/>
+  <rect x="980" y="430" width="520" height="26" rx="10" fill="#2e394c"/>
+  <rect x="1010" y="470" width="180" height="90" rx="6" fill="#121824" stroke="#2a3550"/>
+  <rect x="1025" y="485" width="150" height="60" rx="4" fill="#0a2030"/>
+  <!-- badge reader on desk -->
+  <rect x="990" y="420" width="70" height="90" rx="6" fill="url(#metal)" stroke="#556"/>
+  <rect x="1005" y="438" width="40" height="55" rx="4" fill="#101820"/>
+  <circle cx="1025" cy="470" r="6" fill="#39d98a"/>
+  <!-- mail/envelope on desk -->
+  <rect x="620" y="455" width="120" height="70" rx="4" fill="#e8e0cf" transform="rotate(-6 680 490)"/>
+  <line x1="620" y1="470" x2="740" y2="500" stroke="#b9a98a" transform="rotate(-6 680 490)"/>
+  <!-- camera top right -->
+  <g transform="translate(1240,150)">
+    <rect x="-30" y="20" width="60" height="30" rx="4" fill="#2b3444" stroke="#445"/>
+    <circle cx="0" cy="35" r="10" fill="#0b1220" stroke="#7aa2c8"/>
+    <circle cx="0" cy="35" r="4" fill="#39d98a"/>
+    <rect x="-6" y="-10" width="12" height="30" fill="#3a4558"/>
+    <rect x="-20" y="-18" width="40" height="12" rx="4" fill="#2b3444"/>
+  </g>
+  <!-- umbrella stand left -->
+  <rect x="250" y="520" width="90" height="140" rx="10" fill="#1f2736" stroke="#3a465c"/>
+  <ellipse cx="295" cy="520" rx="50" ry="12" fill="#283244"/>
+  <line x1="280" y1="380" x2="300" y2="540" stroke="#2d2d2d" stroke-width="6" stroke-linecap="round"/>
+  <path d="M230 390 Q300 340 370 390" fill="none" stroke="#1c1c1c" stroke-width="8"/>
+  <path d="M230 390 Q300 360 370 390" fill="#202020" opacity=".9"/>
+  <ellipse cx="300" cy="545" rx="30" ry="6" fill="#4a7a9a" opacity=".35"/>
+  <!-- lighting -->
+  <ellipse cx="830" cy="140" rx="420" ry="60" fill="#d4b06a" opacity=".08"/>
+  <rect width="1600" height="900" fill="url(#vign)" opacity=".15"/>
+  </svg>`;
+}
+
+function bureauScene() {
+  return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c1916"/><stop offset="1" stop-color="#120f0d"/></linearGradient>
+    <linearGradient id="bFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3026"/><stop offset="1" stop-color="#201a14"/></linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a4634"/><stop offset="1" stop-color="#3a2d21"/></linearGradient>
+    <linearGradient id="screenG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f2230"/><stop offset="1" stop-color="#09131b"/></linearGradient>
+    <pattern id="woodGrain" width="20" height="20" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="20" y2="20" stroke="#000" opacity=".05"/></pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bWall)"/>
+  <rect x="0" y="600" width="1600" height="300" fill="url(#bFloor)"/>
+  <g opacity=".2" stroke="#000" stroke-width="2">` + Array.from({length:16},(_,i)=>`<line x1="${i*110}" y1="600" x2="${i*110-120}" y2="900"/>`).join('') + `</g>
+  <!-- window/blinds -->
+  <rect x="1020" y="120" width="420" height="360" rx="6" fill="#0e1622" stroke="#39485c"/>
+  <g opacity=".35" stroke="#6b7f99">` + Array.from({length:10},(_,i)=>`<line x1="1040" y1="${150+i*30}" x2="1420" y2="${150+i*30}"/>`).join('') + `</g>
+  <!-- bookshelf/cabinet right -->
+  <rect x="1180" y="500" width="300" height="280" fill="#2a2119" stroke="#443628"/>
+  <rect x="1200" y="520" width="260" height="70" fill="#201913"/><rect x="1200" y="605" width="260" height="70" fill="#201913"/><rect x="1200" y="690" width="260" height="70" fill="#201913"/>
+  <!-- desk -->
+  <rect x="360" y="520" width="760" height="40" rx="6" fill="url(#wood)"/>
+  <rect x="360" y="520" width="760" height="40" rx="6" fill="url(#woodGrain)" opacity=".4"/>
+  <rect x="420" y="560" width="50" height="240" fill="#33281e"/><rect x="1010" y="560" width="50" height="240" fill="#33281e"/>
+  <!-- drawer unit (entrouvert) -->
+  <rect x="820" y="560" width="240" height="240" fill="#3a2d21" stroke="#2a2017"/>
+  <rect x="840" y="580" width="200" height="60" fill="#33271d"/><rect x="840" y="655" width="200" height="60" fill="#33271d"/>
+  <rect x="855" y="730" width="200" height="60" fill="#2f241b" stroke="#d4b06a" stroke-opacity=".4"/>
+  <rect x="870" y="742" width="170" height="36" fill="#14100d" opacity=".8"/>
+  <!-- laptop -->
+  <rect x="640" y="470" width="200" height="130" rx="6" fill="#1a1f28" stroke="#3a4558"/>
+  <rect x="655" y="485" width="170" height="95" rx="4" fill="url(#screenG)"/>
+  <rect x="600" y="600" width="280" height="18" rx="4" fill="#222833"/>
+  <!-- post-it on laptop area -->
+  <rect x="860" y="500" width="70" height="60" fill="#f2d96b" transform="rotate(6 895 530)"/>
+  <g transform="rotate(6 895 530)" fill="#5a4a10" font-size="10" font-family="Segoe UI"><text x="868" y="522">Sauvegarde</text><text x="878" y="536">coffre</text><text x="888" y="550">23h</text></g>
+  <!-- chair renversée -->
+  <g transform="translate(720,620) rotate(78)">
+    <rect x="-40" y="-120" width="80" height="90" rx="8" fill="#243044" stroke="#3a4a63"/>
+    <rect x="-50" y="-30" width="100" height="18" rx="6" fill="#2b3850"/>
+    <rect x="-35" y="-12" width="12" height="90" fill="#2a3444"/><rect x="23" y="-12" width="12" height="90" fill="#2a3444"/>
+  </g>
+  <!-- calendar on wall left -->
+  <rect x="260" y="170" width="170" height="190" fill="#f4f1e8" stroke="#cfc7b6"/>
+  <rect x="260" y="170" width="170" height="34" fill="#b84a3a"/>
+  <text x="345" y="194" text-anchor="middle" fill="#fff" font-size="16" font-family="Segoe UI">OCTOBRE</text>
+  <g fill="#333" font-size="12" font-family="Segoe UI">` + [ [300,240,'6'],[330,240,'7'],[360,240,'8'],[390,240,'9'],[300,270,'13'] ].map(([x,y,t])=>`<text x="${x}" y="${y}">${t}</text>`).join('') + `</g>
+  <circle cx="300" cy="266" r="16" fill="none" stroke="#c43" stroke-width="3"/>
+  <text x="345" y="330" text-anchor="middle" fill="#a33" font-size="11" font-family="Segoe UI">Livraison N.</text>
+  <!-- framed photo -->
+  <rect x="450" y="360" width="120" height="150" fill="#2a2119" stroke="#6b563f" stroke-width="4"/>
+  <rect x="462" y="372" width="96" height="110" fill="#1a2433"/>
+  <circle cx="490" cy="410" r="14" fill="#6b7f99"/><circle cx="530" cy="415" r="14" fill="#7a8fa8"/><rect x="475" y="432" width="70" height="30" rx="6" fill="#223044"/>
+  <ellipse cx="790" cy="140" rx="360" ry="70" fill="#d4b06a" opacity=".07"/>
+  </svg>`;
+}
+
+function infoScene() {
+  return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="iWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e1620"/><stop offset="1" stop-color="#081018"/></linearGradient>
+    <linearGradient id="iFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a2633"/><stop offset="1" stop-color="#0f1722"/></linearGradient>
+    <linearGradient id="rack" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1b2430"/><stop offset="1" stop-color="#121923"/></linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#iWall)"/>
+  <rect x="0" y="620" width="1600" height="280" fill="url(#iFloor)"/>
+  <g opacity=".15" stroke="#3a556a">` + Array.from({length:20},(_,i)=>`<line x1="${i*90}" y1="620" x2="${i*90-60}" y2="900"/>`).join('') + `</g>
+  <!-- server racks -->
+  ${[140,320,1320].map(x=>`<rect x="${x}" y="160" width="150" height="470" rx="8" fill="url(#rack)" stroke="#2f4155"/>
+  <g>${Array.from({length:14},(_,i)=>`<rect x="${x+15}" y="${185+i*32}" width="120" height="18" rx="3" fill="#0b1220"/><circle cx="${x+28}" cy="${194+i*32}" r="3" fill="${i%3===0?'#39d98a':i%3===1?'#39d98a':'#d4b06a'}" opacity=".9"/>`).join('')}</g>`).join('')}
+  <!-- desk with monitors -->
+  <rect x="520" y="520" width="620" height="30" rx="6" fill="#2a3444"/>
+  <rect x="560" y="550" width="30" height="160" fill="#222b38"/><rect x="1070" y="550" width="30" height="160" fill="#222b38"/>
+  <!-- logs monitor -->
+  <rect x="540" y="300" width="260" height="210" rx="8" fill="#141c28" stroke="#33485e"/>
+  <rect x="555" y="318" width="230" height="160" rx="4" fill="#061018"/>
+  <g fill="#39d98a" font-size="11" font-family="Consolas, monospace" opacity=".9">
+    <text x="565" y="340">22:41 evasseur login</text><text x="565" y="360">22:47 copy NOIR-01 4.2GB</text><text x="565" y="380">22:53 purge partial</text><text x="565" y="400">23:05 lmorel view logs</text><text x="565" y="420">23:09 lmorel logout</text>
+  </g>
+  <!-- camera feeds monitor -->
+  <rect x="830" y="280" width="280" height="230" rx="8" fill="#141c28" stroke="#33485e"/>
+  <rect x="845" y="298" width="250" height="170" rx="4" fill="#050b12"/>
+  <rect x="855" y="308" width="110" height="70" fill="#0b1620" stroke="#203040"/><rect x="975" y="308" width="110" height="70" fill="#0b1620" stroke="#203040"/>
+  <rect x="855" y="388" width="110" height="70" fill="#101010" stroke="#402020"/><rect x="975" y="388" width="110" height="70" fill="#0b1620" stroke="#203040"/>
+  <text x="910" y="430" text-anchor="middle" fill="#c75c5c" font-size="12" font-family="Segoe UI">NO SIGNAL</text>
+  <text x="910" y="448" text-anchor="middle" fill="#c75c5c" font-size="10" font-family="Segoe UI">22:00-23:00</text>
+  <!-- USB under desk area -->
+  <rect x="820" y="700" width="46" height="18" rx="3" fill="#111" stroke="#444"/>
+  <rect x="862" y="704" width="14" height="10" fill="#667"/>
+  <!-- trash bin with paper -->
+  <g transform="translate(340,640)">
+    <path d="M0 0 h90 l-10 120 h-70 z" fill="#2a3444" stroke="#3f4f63"/>
+    <ellipse cx="45" cy="0" rx="45" ry="12" fill="#334155"/>
+    <rect x="18" y="-18" width="54" height="30" rx="4" fill="#efe6d2" transform="rotate(-18 45 -3)"/>
+  </g>
+  <ellipse cx="800" cy="140" rx="500" ry="80" fill="#39d98a" opacity=".05"/>
+  </svg>`;
+}
+
+function laboScene() {
+  return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6edf2"/><stop offset="1" stop-color="#c9d6df"/></linearGradient>
+    <linearGradient id="lFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8c7d3"/><stop offset="1" stop-color="#93a6b5"/></linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dfe8ee"/><stop offset="1" stop-color="#aebfcb"/></linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#lWall)"/>
+  <rect x="0" y="620" width="1600" height="280" fill="url(#lFloor)"/>
+  <g opacity=".25" stroke="#fff">` + Array.from({length:10},(_,i)=>`<rect x="${120+i*150}" y="620" width="140" height="140" fill="none"/>`).join('') + `</g>
+  <!-- central bench -->
+  <rect x="120" y="470" width="1100" height="40" rx="6" fill="url(#steel)" stroke="#8fa3b2"/>
+  <rect x="160" y="510" width="40" height="220" fill="#8fa3b2"/><rect x="520" y="510" width="40" height="220" fill="#8fa3b2"/><rect x="880" y="510" width="40" height="220" fill="#8fa3b2"/><rect x="1140" y="510" width="40" height="220" fill="#8fa3b2"/>
+  <!-- glassware / broken glass area -->
+  <g transform="translate(430,560)">
+    <circle cx="0" cy="0" r="26" fill="#cfe8f5" stroke="#8fb7cc"/>
+    <rect x="-6" y="-50" width="12" height="30" fill="#cfe8f5" stroke="#8fb7cc"/>
+    <polygon points="40,10 60,-5 75,20 55,25" fill="#d9eef8" opacity=".8" stroke="#9fc4d6"/>
+    <polygon points="70,5 85,15 78,30" fill="#d9eef8" opacity=".7" stroke="#9fc4d6"/>
+  </g>
+  <!-- sample shelf -->
+  <rect x="860" y="180" width="300" height="260" fill="#d7e2ea" stroke="#9fb2bf"/>
+  ${Array.from({length:4},(_,r)=>Array.from({length:6},(_,c)=>`<rect x="${880+c*44}" y="${205+r*55}" width="26" height="40" rx="4" fill="${r===1&&c===4?'#eef6ff':'#bfe0f2'}" stroke="#7fa9bf" ${r===1&&c===4?'opacity=".25"':''}/>`).join('')).join('')}
+  <text x="1010" y="170" text-anchor="middle" fill="#567" font-size="16" font-family="Segoe UI">ÉCHANTILLONS</text>
+  <text x="1088" y="285" fill="#c75c5c" font-size="12" font-family="Segoe UI">NX-17 manquant</text>
+  <!-- coat rack / blouse -->
+  <rect x="180" y="240" width="20" height="380" fill="#8fa3b2"/>
+  <rect x="140" y="240" width="100" height="16" rx="6" fill="#8fa3b2"/>
+  <path d="M170 300 l40 -20 h60 l40 20 v160 q-70 30 -140 0 z" fill="#f4f8fb" stroke="#c7d5df"/>
+  <rect x="235" y="360" width="40" height="26" rx="4" fill="#fff" stroke="#ccd"/>
+  <text x="255" y="378" text-anchor="middle" fill="#334" font-size="8" font-family="Segoe UI">N. Bernard</text>
+  <circle cx="245" cy="420" r="10" fill="#c9a46a" opacity=".6"/>
+  <!-- service door right -->
+  <rect x="1280" y="220" width="220" height="420" rx="6" fill="#cfdbe4" stroke="#8fa3b2"/>
+  <rect x="1305" y="250" width="170" height="360" rx="4" fill="#b8c9d6"/>
+  <rect x="1440" y="430" width="18" height="50" rx="6" fill="#7f95a6"/>
+  <rect x="1318" y="430" width="8" height="60" fill="#7f95a6" opacity=".7"/>
+  <text x="1390" y="620" text-anchor="middle" fill="#567" font-size="16" font-family="Segoe UI">PORTE SERVICE</text>
+  <!-- fume hood -->
+  <rect x="420" y="180" width="260" height="220" fill="#dfe9ef" stroke="#a9bcc9"/>
+  <rect x="445" y="210" width="210" height="150" fill="#b7d0de" opacity=".5" stroke="#9fb6c6"/>
+  <ellipse cx="800" cy="120" rx="520" ry="70" fill="#ffffff" opacity=".35"/>
+  </svg>`;
+}
+
+function archivesScene() {
+  return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1713"/><stop offset="1" stop-color="#100e0b"/></linearGradient>
+    <linearGradient id="aFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2620"/><stop offset="1" stop-color="#171410"/></linearGradient>
+    <linearGradient id="metalCab" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#50565e"/><stop offset="1" stop-color="#3a4047"/></linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#aWall)"/>
+  <rect x="0" y="620" width="1600" height="280" fill="url(#aFloor)"/>
+  <g opacity=".2" stroke="#000">` + Array.from({length:12},(_,i)=>`<line x1="${i*150}" y1="620" x2="${i*150-80}" y2="900"/>`).join('') + `</g>
+  <!-- cabinets rows -->
+  ${[120,320,520,1180].map(x=>`<rect x="${x}" y="140" width="170" height="500" rx="6" fill="url(#metalCab)" stroke="#2a2f35"/>
+  ${Array.from({length:5},(_,i)=>`<rect x="${x+15}" y="${165+i*95}" width="140" height="70" rx="4" fill="#454b53" stroke="#2f343a"/><rect x="${x+70}" y="${195+i*95}" width="30" height="8" rx="3" fill="#8a9098"/>`).join('')}` ).join('')}
+  <!-- gap / missing folder area -->
+  <rect x="900" y="160" width="220" height="460" rx="6" fill="url(#metalCab)" stroke="#2a2f35"/>
+  ${[0,1,3,4].map(i=>`<rect x="915" y="${185+i*90}" width="190" height="65" rx="4" fill="#454b53" stroke="#2f343a"/><rect x="995" y="${212+i*90}" width="30" height="8" rx="3" fill="#8a9098"/>`).join('')}
+  <rect x="915" y="365" width="190" height="65" rx="4" fill="#141210" stroke="#d4b06a" stroke-opacity=".35"/>
+  <text x="1010" y="404" text-anchor="middle" fill="#d4b06a" font-size="14" font-family="Segoe UI">DOSSIER NX</text>
+  <!-- moved box on floor -->
+  <g transform="translate(500,560)">
+    <rect x="0" y="40" width="220" height="120" fill="#6b5842" stroke="#4a3c2d"/>
+    <rect x="10" y="50" width="200" height="100" fill="#7a654c"/>
+    <path d="M0 40 l30 -30 h220 l-30 30 z" fill="#806c52" stroke="#4a3c2d"/>
+    <text x="110" y="115" text-anchor="middle" fill="#f0e6d2" font-size="16" font-family="Segoe UI">PROJET NÉMÉSIS</text>
+    <rect x="220" y="70" width="40" height="90" fill="#1f1b16" opacity=".25"/>
+  </g>
+  <!-- dust-free trace -->
+  <rect x="720" y="650" width="120" height="40" fill="#2f2a23" opacity=".35" rx="4"/>
+  <!-- hidden note behind cabinet area -->
+  <rect x="300" y="320" width="60" height="50" fill="#f4f1e8" transform="rotate(-8 330 345)"/>
+  <line x1="308" y1="335" x2="350" y2="332" stroke="#b8b0a0" transform="rotate(-8 330 345)"/>
+  <line x1="308" y1="345" x2="348" y2="342" stroke="#b8b0a0" transform="rotate(-8 330 345)"/>
+  <!-- hanging lamp light -->
+  <ellipse cx="800" cy="120" rx="420" ry="90" fill="#d4b06a" opacity=".08"/>
+  <rect x="790" y="80" width="20" height="60" fill="#444"/>
+  <path d="M740 140 h120 l-20 30 h-80 z" fill="#5a503f"/>
+  </svg>`;
 }
 
 function renderInventory(c: CaseData) {
