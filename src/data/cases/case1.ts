@@ -1,4 +1,4 @@
-import type { CaseData } from '../../types';
+import type { CaseData, CaseProgress } from '../../types';
 
 export const case1: CaseData = {
   id: 'case1',
@@ -8,6 +8,14 @@ export const case1: CaseData = {
   difficulty: 'Moyenne',
   duration: '45-60 min',
   intro: "Nuit du 12 au 13 octobre. Le laboratoire Helix, spécialisé en neurochimie, est retrouvé fermé de l'intérieur au petit matin. Le Dr Émile Vasseur, chercheur principal, est introuvable. La direction vous mandate pour comprendre ce qui s'est réellement passé avant que l'affaire n'ébruite.",
+  objectives: [
+    { id: 'o_scene', title: 'Sécuriser les lieux', hint: 'Commencez par le hall d’entrée et le bureau du scientifique.', check: (p: CaseProgress) => p.visitedLocations.includes('hall') && p.visitedLocations.includes('bureau') },
+    { id: 'o_first', title: 'Relever les premiers indices', hint: 'Examinez les objets du bureau et du hall : badges, calendrier, photo, ordinateur, courrier.', check: (p: CaseProgress) => p.discoveredClues.length >= 5 },
+    { id: 'o_staff', title: 'Interroger les témoins', hint: 'Le personnel de nuit en sait plus qu’il ne le dit. Interrogez au moins trois personnes.', check: (p: CaseProgress) => p.interviewed.length >= 3 },
+    { id: 'o_archives', title: 'Accéder aux archives', hint: 'La porte de service du laboratoire mène aux archives. Cherchez la note cachée.', check: (p: CaseProgress) => p.visitedLocations.includes('archives') && p.discoveredClues.includes('c_hidden_note') },
+    { id: 'o_chrono', title: 'Reconstituer la chronologie', hint: 'Replacez les neuf événements dans l’ordre, du premier au dernier, dans l’onglet Chronologie.', check: (p: CaseProgress) => p.timelineOrder.join(',') === 't1,t2,t3,t4,t5,t6,t7,t8,t9' },
+    { id: 'o_truth', title: 'Confondre le coupable', hint: 'Rendez-vous dans l’onglet Résolution et répondez aux cinq questions.', check: (p: CaseProgress) => p.resolved },
+  ],
   locations: [
     {
       id: 'hall', name: "Hall d'entrée", illustration: 'hall',

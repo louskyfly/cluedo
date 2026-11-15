@@ -1,4 +1,4 @@
-import type { CaseData } from '../../types';
+import type { CaseData, CaseProgress } from '../../types';
 
 export const case2: CaseData = {
   id: 'case2',
@@ -8,6 +8,14 @@ export const case2: CaseData = {
   difficulty: 'Moyenne',
   duration: '40-55 min',
   intro: "Hôtel Bellevue, 3 novembre, 07h15. Arnaud Delcourt, client de la chambre 407, ne répond plus. Son téléphone, sa valise et ses affaires sont restés sur place. Les caméras de l’entrée et du parking n’ont enregistré aucune sortie. La direction, inquiète d’un scandale, vous demande d’établir la vérité avant d’alerter la police.",
+  objectives: [
+    { id: 'o2_scene', title: 'Sécuriser la chambre 407', hint: 'Commencez par la réception et la chambre du client disparu.', check: (p: CaseProgress) => p.visitedLocations.includes('reception') && p.visitedLocations.includes('room407') },
+    { id: 'o2_clues', title: 'Relever les indices de la chambre', hint: 'Examinez la valise, le téléphone, la fenêtre et le ticket de pressing.', check: (p: CaseProgress) => p.discoveredClues.length >= 6 },
+    { id: 'o2_staff', title: 'Interroger le personnel', hint: 'La réceptionniste, l’agent de nuit et la femme de chambre savent des choses différentes.', check: (p: CaseProgress) => p.interviewed.length >= 3 },
+    { id: 'o2_service', title: 'Suivre la piste de service', hint: 'L’escalier de service et la buanderie mènent au parking et à la sortie de livraison.', check: (p: CaseProgress) => p.visitedLocations.includes('parking') && p.discoveredClues.includes('c2_parking_cam') },
+    { id: 'o2_chrono', title: 'Reconstituer la chronologie', hint: 'Replacez les sept événements dans l’ordre dans l’onglet Chronologie.', check: (p: CaseProgress) => p.timelineOrder.join(',') === 't1,t2,t3,t4,t5,t6,t7' },
+    { id: 'o2_truth', title: 'Confondre le complice', hint: 'Rendez-vous dans l’onglet Résolution et répondez aux cinq questions.', check: (p: CaseProgress) => p.resolved },
+  ],
   locations: [
     { id: 'reception', name: 'Réception', illustration: 'reception', description: "Un comptoir de marbre sous une lumière chaude. Le registre des arrivées et le tableau des clés sont encore en place.", hotspots: [
       { id: 'r_register', label: 'Registre d’arrivée', x: 36, y: 46, w: 14, h: 12, description: 'Le registre indique l’arrivée de Delcourt à 18h42, seul, pour deux nuits.', clueId: 'c2_register', documentId: 'd2_register' },

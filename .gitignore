@@ -14,3 +14,4 @@ pnpm-debug.log*
 coverage/
 .fix.mjs
 fix.mjs
+.openchamber/

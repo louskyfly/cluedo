@@ -86,6 +86,13 @@ export interface Solution {
   }[];
 }
 
+export interface Objective {
+  id: string;
+  title: string;
+  hint: string;
+  check: (p: CaseProgress) => boolean;
+}
+
 export interface CaseData {
   id: string;
   title: string;
@@ -99,6 +106,7 @@ export interface CaseData {
   timeline: TimelineEvent[];
   solution: Solution;
   intro: string;
+  objectives?: Objective[];
 }
 
 export interface CaseProgress {
