@@ -223,37 +223,38 @@ export function bureauArt() {
     <line x1="912" y1="536" x2="956" y2="560" stroke="#b9a98a" stroke-width="4" stroke-linecap="round"/>
   </g>
 
-  <!-- overturned office chair -->
-  <g transform="translate(850,640) rotate(62)">
-    <ellipse cx="0" cy="20" rx="120" ry="34" fill="#000" opacity=".35" filter="url(#bBlurS)"/>
-    <!-- headrest -->
-    <rect x="-38" y="-252" width="76" height="34" rx="16" fill="#26344a" stroke="#41516a" stroke-width="3"/>
-    <!-- backrest -->
-    <path d="M-62 -222 q0 -34 30 -34 h64 q30 0 30 34 v104 q0 22 -22 22 h-80 q-22 0 -22 -22 z" fill="#243044" stroke="#41516a" stroke-width="3"/>
-    <rect x="-48" y="-208" width="96" height="118" rx="16" fill="url(#bMesh)" opacity=".9"/>
-    <path d="M-56 -222 q0 -26 24 -26 h64 q24 0 24 26" fill="none" stroke="#5a7190" stroke-width="2" opacity=".6"/>
-    <rect x="-48" y="-96" width="96" height="22" rx="8" fill="#2f3b4d" stroke="#41516a"/>
-    <!-- seat -->
-    <path d="M-70 -62 h140 q8 0 8 8 l-8 24 q-2 8 -12 8 h-116 q-10 0 -12 -8 l-8 -24 q0 -8 8 -8 z" fill="#2a3444" stroke="#41516a" stroke-width="3"/>
-    <path d="M-62 -56 h124 l-4 12 h-116 z" fill="#33435a" opacity=".8"/>
-    <!-- armrests -->
-    <path d="M-78 -80 q-10 34 0 54" fill="none" stroke="#1e2733" stroke-width="10" stroke-linecap="round"/>
-    <path d="M78 -80 q10 34 0 54" fill="none" stroke="#1e2733" stroke-width="10" stroke-linecap="round"/>
-    <rect x="-86" y="-92" width="30" height="12" rx="6" fill="#2a3444"/>
-    <rect x="56" y="-92" width="30" height="12" rx="6" fill="#2a3444"/>
-    <!-- gas lift -->
-    <rect x="-8" y="-30" width="16" height="58" fill="#1e2733"/>
-    <rect x="-12" y="22" width="24" height="14" rx="5" fill="#151d27"/>
-    <!-- five-star base -->
-    <g stroke="#1e2733" stroke-width="11" stroke-linecap="round">
-      <line x1="0" y1="34" x2="-66" y2="66"/><line x1="0" y1="34" x2="66" y2="66"/>
-      <line x1="0" y1="34" x2="-24" y2="82"/><line x1="0" y1="34" x2="24" y2="82"/>
-      <line x1="0" y1="34" x2="0" y2="86"/>
+  <!-- overturned office chair, side view -->
+  <g transform="translate(790,610)">
+    <ellipse cx="100" cy="150" rx="170" ry="30" fill="#000" opacity=".38" filter="url(#bBlurS)"/>
+    <!-- backrest lying horizontally -->
+    <g transform="rotate(-7 160 50)">
+      <rect x="50" y="4" width="230" height="92" rx="22" fill="#243044" stroke="#41516a" stroke-width="3"/>
+      <rect x="68" y="18" width="194" height="64" rx="16" fill="url(#bMesh)" opacity=".9"/>
+      <path d="M58 14 q8 -10 22 -10 h168 q14 0 22 10" fill="none" stroke="#5a7190" stroke-width="2" opacity=".55"/>
+      <!-- headrest -->
+      <rect x="268" y="18" width="52" height="64" rx="16" fill="#26344a" stroke="#41516a" stroke-width="3"/>
+      <!-- lumbar bar -->
+      <rect x="60" y="82" width="178" height="18" rx="8" fill="#2f3b4d" stroke="#41516a"/>
     </g>
-    <circle cx="0" cy="34" r="11" fill="#18212c"/>
-    <circle cx="-66" cy="66" r="8" fill="#0f151c"/><circle cx="66" cy="66" r="8" fill="#0f151c"/>
-    <circle cx="-24" cy="82" r="8" fill="#0f151c"/><circle cx="24" cy="82" r="8" fill="#0f151c"/>
-    <circle cx="0" cy="86" r="8" fill="#0f151c"/>
+    <!-- seat standing on edge -->
+    <path d="M32 60 q-12 0 -12 12 l-8 116 q0 12 12 12 h74 q12 0 12 -12 l-6 -116 q0 -12 -12 -12 z" fill="#2a3444" stroke="#41516a" stroke-width="3" transform="rotate(10 62 130)"/>
+    <path d="M42 72 q-6 0 -6 8 l-4 96 q0 8 8 8 h54 q8 0 8 -8 l-4 -96 q0 -8 -8 -8 z" fill="#33435a" opacity=".65" transform="rotate(10 62 130)"/>
+    <!-- armrest -->
+    <path d="M28 72 q-26 54 4 100" fill="none" stroke="#1e2733" stroke-width="10" stroke-linecap="round"/>
+    <rect x="14" y="58" width="42" height="12" rx="6" fill="#2a3444" transform="rotate(-8 35 64)"/>
+    <!-- gas lift -->
+    <rect x="-4" y="116" width="16" height="62" rx="4" fill="#1e2733" transform="rotate(22 4 147)"/>
+    <rect x="-16" y="164" width="26" height="14" rx="5" fill="#151d27" transform="rotate(22 0 171)"/>
+    <!-- five-star base -->
+    <g stroke="#1e2733" stroke-width="10" stroke-linecap="round">
+      <line x1="-14" y1="176" x2="-92" y2="196"/><line x1="-14" y1="176" x2="42" y2="216"/>
+      <line x1="-14" y1="176" x2="-52" y2="228"/><line x1="-14" y1="176" x2="20" y2="242"/>
+      <line x1="-14" y1="176" x2="-14" y2="248"/>
+    </g>
+    <circle cx="-14" cy="176" r="10" fill="#18212c"/>
+    <circle cx="-92" cy="196" r="7" fill="#0f151c"/><circle cx="42" cy="216" r="7" fill="#0f151c"/>
+    <circle cx="-52" cy="228" r="7" fill="#0f151c"/><circle cx="20" cy="242" r="7" fill="#0f151c"/>
+    <circle cx="-14" cy="248" r="7" fill="#0f151c"/>
   </g>
 
   <!-- rug pattern -->

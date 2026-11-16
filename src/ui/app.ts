@@ -153,7 +153,7 @@ function cardCase(c: CaseData) {
       <h3>${esc(c.title)}</h3>
       <p>${esc(c.description)}</p>
       <div class="case-foot">
-        <button class="btn ${playable ? 'primary' : ''}" data-act="open-case" data-id="${c.id}" ${!playable ? 'disabled' : ''}>${done ? 'Rejouer l’affaire' : prog ? 'Reprendre l’enquête' : 'Ouvrir le dossier'}${icon('chevronRight', 15)}</button>
+        <button class="btn ${playable ? 'primary' : ''}" data-act="${done ? 'replay-case' : 'open-case'}" data-id="${c.id}" ${!playable ? 'disabled' : ''}>${done ? 'Rejouer l’affaire' : prog ? 'Reprendre l’enquête' : 'Ouvrir le dossier'}${icon('chevronRight', 15)}</button>
         ${done ? `<span class="faint" style="font-size:.7rem">Terminée le ${new Date(done.completedAt).toLocaleDateString('fr-FR')}</span>` : ''}
       </div>
     </div>
@@ -444,8 +444,11 @@ function renderBoard(c: CaseData) {
 
 function renderTimeline(c: CaseData) {
   const p = progress()!;
-  let order = p.timelineOrder.length ? p.timelineOrder : c.timeline.map(t => t.id);
-  if (p.timelineOrder.length === 0) { p.timelineOrder = [...order]; markDirty(); }
+  if (p.timelineOrder.length === 0) {
+    p.timelineOrder = [...c.timeline].reverse().map(t => t.id);
+    markDirty();
+  }
+  const order = p.timelineOrder;
   const items = order.map(id => c.timeline.find(t => t.id === id)).filter(Boolean) as any[];
   return `<div class="timeline-page">
     <div class="tl-head"><div><h1>Chronologie</h1><p>Replacez les événements dans l’ordre, du premier au dernier. Les heures et les témoignages doivent concorder. Utilisez les flèches pour ajuster.</p></div><div class="row"><button class="btn" data-act="verify-timeline">${icon('check', 15)} Vérifier l’ordre</button></div></div>
@@ -488,7 +491,7 @@ function renderResolution(c: CaseData) {
     <div class="note-card" style="margin-bottom:14px"><h3>${icon('clipboard', 15)} État du dossier</h3><div class="meta-row"><span class="meta">${icon('search', 12)} ${p.discoveredClues.length}/${c.clues.length} indices</span><span class="meta">${icon('users', 12)} ${p.interviewed.length}/${c.characters.length} interrogatoires</span><span class="meta ${p.attempts ? 'red' : ''}">${icon('gavel', 12)} ${p.attempts} tentative${p.attempts > 1 ? 's' : ''}</span>${missing ? `<span class="meta red">${icon('bulb', 12)} Des indices manquent peut-être</span>` : `<span class="meta green">${icon('check', 12)} Tous les indices collectés</span>`}</div></div>
     <form id="resolveForm">${c.solution.questions.map((q, i) => `<div class="q"><div class="q-title"><span class="q-no">QUESTION ${String(i + 1).padStart(2, '0')}</span><strong>${esc(q.prompt)}</strong></div>
       ${q.options.map(o => `<label><input type="radio" name="${q.id}" value="${o.id}"><span>${esc(o.text)}</span></label>`).join('')}</div>`).join('')}
-      <div class="resolve-actions"><button type="submit" class="btn primary">${icon('gavel', 16)} Valider la déduction</button><span class="faint" style="font-size:.75rem">Tentatives : ${p.attempts}</span></div>
+      <div class="resolve-actions"><button type="button" class="btn primary" data-act="submit-resolution">${icon('gavel', 16)} Valider la déduction</button><span class="faint" style="font-size:.75rem">Tentatives : ${p.attempts}</span></div>
     </form>
     <div id="resolveResult" class="resolve-result"></div>
   </div></div>`;
@@ -506,6 +509,17 @@ function bindEvents() {
     if (act === 'goto') { sfx('click', state.save.settings.sound); setScreen(t.dataset.screen as any); }
     else if (act === 'continue') continueLast();
     else if (act === 'open-case') { sfx('click', state.save.settings.sound); openCase(t.dataset.id!); }
+    else if (act === 'replay-case') {
+      const id = t.dataset.id!;
+      if (confirm('Rejouer cette affaire ? La progression et le score précédents seront remplacés.')) {
+        delete state.save.cases[id];
+        delete state.save.completed[id];
+        state.save.stats.casesCompleted = Object.keys(state.save.completed).length;
+        persistSave(state.save);
+        sfx('click', state.save.settings.sound);
+        openCase(id);
+      }
+    }
     else if (act === 'start-case') { const p = progress()!; if (!p.visitedLocations.length) visitLocation(activeCase()!.locations[0].id); state.screen = 'case'; checkObjectives(); emit(); }
     else if (act === 'tab') { sfx('click', state.save.settings.sound); state.caseTab = t.dataset.tab as any; emit(); }
     else if (act === 'loc') { sfx('click', state.save.settings.sound); visitLocation(t.dataset.id!); checkObjectives(); }
@@ -528,6 +542,7 @@ function bindEvents() {
     else if (act === 'clear-edges') { const p = progress()!; p.board.edges = []; markDirty(); emit(); }
     else if (act === 'zoom') { const p = progress()!; p.board.zoom = Math.min(2.2, Math.max(0.35, p.board.zoom + (t.dataset.dir === 'in' ? 0.12 : -0.12))); markDirty(); emit(); }
     else if (act === 'verify-timeline') verifyTimeline();
+    else if (act === 'submit-resolution') { const f = document.getElementById('resolveForm') as HTMLFormElement | null; if (f) submitResolution(f); }
     else if (act === 'tl-move') moveTimeline(t.dataset.id!, t.dataset.dir as any);
     else if (act === 'textsize') { state.save.settings.textSize = t.dataset.v as any; document.documentElement.style.fontSize = state.save.settings.textSize === 'large' ? '18px' : '16px'; markDirty(); emit(); }
     else if (act === 'sound') { state.save.settings.sound = t.dataset.v === 'on'; markDirty(); emit(); }
@@ -875,11 +890,15 @@ function submitResolution(form: HTMLFormElement) {
   if (!allCorrect) {
     sfx('error', state.save.settings.sound);
     const res = document.getElementById('resolveResult')!;
-    res.innerHTML = `<div class="card" style="border-color:#5a3030"><h3>Déduction incomplète (${correct}/${c.solution.questions.length})</h3>
-      <ul>${details.map(d=>`<li>${esc(d)}</li>`).join('')}</ul>
-      <p>Certains éléments ne concordent pas. Reprenez l’enquête : explorez les lieux restants, relisez les indices et vérifiez la chronologie. La solution n’est pas révélée.</p>
-      <button data-act="tab" data-tab="lieux" class="primary">Retourner sur le terrain</button></div>`;
-    markDirty(); persistSave(state.save); emit(); return;
+    res.innerHTML = `<div class="fail-card"><h3>Déduction incomplète — ${correct}/${c.solution.questions.length}</h3>
+      <ul>${details.map(d => `<li>${esc(d)}</li>`).join('')}</ul>
+      <p style="color:#d6c0bd;font-size:.82rem;line-height:1.6;margin:0 0 12px">Certains éléments ne concordent pas. Reprenez l’enquête : explorez les lieux restants, relisez les indices et vérifiez la chronologie. La solution n’est pas révélée.</p>
+      <button class="btn primary" data-act="tab" data-tab="lieux">${icon('back', 15)} Retourner sur le terrain</button></div>`;
+    const attemptsLabel = document.querySelector('.resolve-actions .faint');
+    if (attemptsLabel) attemptsLabel.textContent = `Tentatives : ${p.attempts}`;
+    markDirty(); persistSave(state.save);
+    setTimeout(() => document.getElementById('resolveResult')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 40);
+    return;
   }
   // score
   const score = computeScore(c,p);
@@ -900,15 +919,16 @@ function computeScore(c: CaseData, p: any): ScoreResult {
   const contraFlags = ['contradiction_morel_photo','morel_logs_seen','kader_not_locker','camera_after_22'].filter(f=>p.dialogueFlags.includes(f)).length;
   const contradictions = Math.round((contraFlags/4)*15);
   const hintsPenalty = Math.min(10, (p.hintsUsed||0)*5) + Math.max(0,(p.attempts-1))*3;
-  const timeBonus = 10; // simplified
+  const elapsedMin = Math.max(1, Math.round((Date.now() - p.startedAt) / 60000));
+  const timeBonus = elapsedMin <= 30 ? 10 : elapsedMin <= 60 ? 7 : elapsedMin <= 120 ? 4 : 0;
   let total = clues + deductions + contradictions + timeBonus - hintsPenalty;
   total = Math.max(0, Math.min(100, total));
   const breakdown = [
-    `Indices découverts: ${p.discoveredClues.length}/${c.clues.length} (+${clues})`,
-    `Preuves clés identifiées: ${keyFound}/${c.solution.keyClueIds.length} (+${deductions})`,
-    `Contradictions/pistes vérifiées: ${contraFlags}/4 (+${contradictions})`,
-    `Tentatives de résolution: ${p.attempts} (pénalité ${Math.max(0,(p.attempts-1))*3})`,
-    `Bonus enquête: +${timeBonus}`
+    `Indices découverts : ${p.discoveredClues.length}/${c.clues.length} (+${clues})`,
+    `Preuves clés identifiées : ${keyFound}/${c.solution.keyClueIds.length} (+${deductions})`,
+    `Contradictions / pistes vérifiées : ${contraFlags}/4 (+${contradictions})`,
+    `Tentatives de résolution : ${p.attempts} (pénalité ${Math.max(0,(p.attempts-1))*3})`,
+    `Temps d’enquête : ${elapsedMin} min (+${timeBonus})`
   ];
   return { total, clues, deductions, contradictions, hints: hintsPenalty, time: timeBonus, breakdown };
 }

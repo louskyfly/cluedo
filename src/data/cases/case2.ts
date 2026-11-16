@@ -31,7 +31,7 @@ export const case2: CaseData = {
     ]},
     { id: 'corridor', name: 'Couloir & Escalier de service', illustration: 'corridor', description: "Un couloir feutré menant à l’escalier de service. La porte coupe-feu grince légèrement.", hotspots: [
       { id: 'co_cart', label: 'Chariot à linge', x: 26, y: 58, w: 18, h: 18, description: 'Grand chariot à linge stationné près de la porte de service, traces de roues fraîches.', clueId: 'c2_cart' },
-      { id: 'co_badge', label: 'Lecteur de l’escalier de service', x: 64, y: 40, w: 10, h: 14, description: 'Le lecteur a enregistré un passage avec un badge personnel à 23h08.', clueId: 'c2_service_badge' },
+      { id: 'co_badge', label: 'Lecteur de l’escalier de service', x: 64, y: 40, w: 10, h: 14, description: 'Le lecteur a enregistré un passage avec un badge personnel à 23h08.', clueId: 'c2_service_badge', unlocksLocationId: 'parking' },
       { id: 'co_fiber', label: 'Fibre textile au sol', x: 48, y: 70, w: 8, h: 8, description: 'Un morceau de tissu bleu-gris identique aux uniformes du personnel.', clueId: 'c2_fiber' },
     ]},
     { id: 'laundry', name: 'Buanderie', illustration: 'laundry', description: "Chaleur humide, machines en marche. Des uniformes propres sont empilés sur une table.", hotspots: [

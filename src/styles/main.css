@@ -187,7 +187,9 @@ button:active { transform: translateY(1px); }
 .meta.gold { color: var(--gold-soft); border-color: rgba(201,164,106,.3); background: rgba(201,164,106,.05); }
 .meta.green { color: #a9d8bd; border-color: rgba(93,167,127,.35); background: rgba(93,167,127,.06); }
 .meta.red { color: #e5a39b; border-color: rgba(181,72,63,.35); background: rgba(181,72,63,.06); }
-.case-foot { display: flex; gap: 8px; align-items: center; }
+.case-foot { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.case-foot .btn { white-space: nowrap; }
+.case-foot .faint { flex-basis: 100%; }
 
 /* ---------- case shell ---------- */
 .case-shell { display: flex; flex-direction: column; height: 100%; }
@@ -265,6 +267,11 @@ button:active { transform: translateY(1px); }
 .scene-bg.scene-hall svg { filter: brightness(1.08) contrast(1.05) saturate(1.03); }
 .scene-bg.scene-archives svg { filter: brightness(1.08) contrast(1.06) saturate(1.04); }
 .scene-bg.scene-info svg { filter: contrast(1.06) saturate(1.08); }
+.scene-bg.scene-reception svg { filter: brightness(1.06) contrast(1.04) saturate(1.03); }
+.scene-bg.scene-room svg { filter: brightness(1.08) contrast(1.04) saturate(1.02); }
+.scene-bg.scene-corridor svg { filter: brightness(1.08) contrast(1.05) saturate(1.02); }
+.scene-bg.scene-laundry svg { filter: brightness(1.02) contrast(1.06) saturate(1.04); }
+.scene-bg.scene-parking svg { filter: brightness(1.08) contrast(1.06) saturate(1.02); }
 .scene-topline { position: absolute; z-index: 4; top: 14px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; pointer-events: none; }
 .scene-tag { display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(233,237,244,.16); background: rgba(8,10,14,.55); backdrop-filter: blur(8px); color: rgba(233,237,244,.82); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; }
 .scene-hint { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: rgba(8,10,14,.45); border: 1px solid rgba(201,164,106,.18); color: rgba(227,200,147,.8); font-size: .66rem; letter-spacing: .08em; backdrop-filter: blur(8px); }

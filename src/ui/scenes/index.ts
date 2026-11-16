@@ -3,6 +3,11 @@ import { bureauArt } from './bureau';
 import { infoArt } from './info';
 import { laboArt } from './labo';
 import { archivesArt } from './archives';
+import { receptionArt } from './reception';
+import { roomArt } from './room';
+import { corridorArt } from './corridor';
+import { laundryArt } from './laundry';
+import { parkingArt } from './parking';
 
 export function renderSceneArt(key: string): string | null {
   switch (key) {
@@ -11,6 +16,11 @@ export function renderSceneArt(key: string): string | null {
     case 'info': return infoArt();
     case 'labo': return laboArt();
     case 'archives': return archivesArt();
+    case 'reception': return receptionArt();
+    case 'room': return roomArt();
+    case 'corridor': return corridorArt();
+    case 'laundry': return laundryArt();
+    case 'parking': return parkingArt();
     default: return null;
   }
 }
